@@ -8,10 +8,11 @@
         :root {
             --bg-color: #fcf8ff;
             --card-bg: #ffffff;
-            --pastel-purple: #d8b4fe; /* Pastel Purple */
+            --pastel-purple: #d8b4fe;
             --accent-purple: #9333ea;
             --text-main: #4b2c5e;
             --muted-text: #8e7da0;
+            --pink: #f472b6;
         }
 
         body {
@@ -25,10 +26,7 @@
             align-items: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-        }
+        .container { width: 100%; max-width: 450px; }
 
         .header-card {
             background: var(--pastel-purple);
@@ -41,16 +39,15 @@
         }
 
         .header-card h1 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; }
-        .header-card .sub-label { font-size: 0.85rem; opacity: 0.9; font-weight: normal; margin-top: 2px; }
-        .header-card .total-amt { font-size: 2.5rem; font-weight: bold; margin: 15px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .header-card .sub-label { font-size: 0.85rem; opacity: 0.9; margin-top: 2px; }
+        .header-card .total-amt { font-size: 2.3rem; font-weight: bold; margin: 15px 0; }
 
         .section-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             margin: 25px 0 12px 10px;
             color: var(--accent-purple);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .card {
@@ -67,25 +64,24 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px weight thin solid #f9f5ff;
+            border-bottom: 1px solid #f9f5ff;
         }
         .row:last-child { border-bottom: none; }
 
         .label { font-weight: 600; font-size: 0.95rem; }
         
-        input[type="number"], input[type="text"] {
+        input {
             border: 2px solid #f3e8ff;
             border-radius: 10px;
             padding: 8px;
-            width: 110px;
+            width: 100px;
             text-align: right;
             outline: none;
-            transition: border 0.3s;
+            font-size: 0.9rem;
         }
-        input:focus { border-color: var(--pastel-purple); }
 
         .display-val { font-weight: bold; color: var(--accent-purple); }
-        .liability-val { color: #f472b6; } /* Pastel Pink for liabilities */
+        .liability-val { color: var(--pink); }
 
         .sub-section {
             margin-left: 20px;
@@ -99,17 +95,16 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 0.7rem;
             width: 22px;
             height: 22px;
             color: var(--accent-purple);
             margin-right: 5px;
         }
 
-        .remark {
-            font-size: 0.75rem;
+        .rate-info {
+            font-size: 0.65rem;
             color: var(--muted-text);
-            margin-top: 3px;
+            display: block;
         }
 
         .controls {
@@ -125,23 +120,19 @@
             border-radius: 30px;
             border: none;
             font-weight: bold;
-            font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 6px 15px rgba(147, 51, 234, 0.3);
-            transition: transform 0.2s;
         }
-        button.main-btn:active { transform: scale(0.95); }
 
         .edit-btn { background: var(--accent-purple); color: white; }
         .save-btn { background: #10b981; color: white; display: none; }
 
         .hidden { display: none !important; }
-        .blur { filter: blur(4px); opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
 
-<div class="container" id="mainContent">
+<div class="container">
     <div class="header-card">
         <h1>Total Assets</h1>
         <div class="sub-label">excl. MPF</div>
@@ -149,7 +140,7 @@
         <div style="font-size: 0.8rem; opacity: 0.9;">Total Net Worth: <span id="true-net-worth">$****</span></div>
     </div>
 
-    <div class="section-title">✨ Assets</div>
+    <div class="section-title">✨ Assets (HKD)</div>
     <div class="card">
         <div class="row">
             <span class="label">HSBC Bank</span>
@@ -169,8 +160,14 @@
             <input type="number" id="futu" class="edit-mode hidden"><span class="display-val view-mode" id="val_futu">$****</span>
         </div>
         <div class="row">
-            <span class="label">MFC Stocks</span>
-            <input type="number" id="mfc" class="edit-mode hidden"><span class="display-val view-mode" id="val_mfc">$****</span>
+            <div>
+                <span class="label">MFC Stocks</span>
+                <span class="rate-info" id="fx-rate">Rate: Fetching...</span>
+            </div>
+            <div>
+                <input type="number" id="mfc_usd" class="edit-mode hidden" placeholder="USD">
+                <span class="display-val view-mode" id="val_mfc_hkd">$****</span>
+            </div>
         </div>
         <div class="row">
             <span class="label">Cash</span>
@@ -189,20 +186,20 @@
     <div class="section-title">💸 Liabilities</div>
     <div class="card">
         <div class="row">
-            <div><div class="label">HSBC Everymile</div><div class="remark" id="rem_everymile">Pay: --</div><input type="text" id="date_everymile" class="edit-mode hidden" placeholder="Date"></div>
-            <div><input type="number" id="hsbc_em" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_em">$****</span></div>
+            <div><div class="label">HSBC Everymile</div><input type="text" id="date_em" class="edit-mode hidden" placeholder="Date"></div>
+            <input type="number" id="hsbc_em" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_em">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">HSBC Gold</div><div class="remark" id="rem_gold">Pay: --</div><input type="text" id="date_gold" class="edit-mode hidden" placeholder="Date"></div>
-            <div><input type="number" id="hsbc_gold" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_gold">$****</span></div>
+            <div><div class="label">HSBC Gold</div><input type="text" id="date_gold" class="edit-mode hidden" placeholder="Date"></div>
+            <input type="number" id="hsbc_gold" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_gold">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">SCB Mastercard</div><div class="remark" id="rem_scb">Pay: --</div><input type="text" id="date_scb" class="edit-mode hidden" placeholder="Date"></div>
-            <div><input type="number" id="scb_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_scb_mc">$****</span></div>
+            <div><div class="label">SCB Mastercard</div><input type="text" id="date_scb" class="edit-mode hidden" placeholder="Date"></div>
+            <input type="number" id="scb_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_scb_mc">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">Citi Mastercard</div><div class="remark" id="rem_citi">Pay: --</div><input type="text" id="date_citi" class="edit-mode hidden" placeholder="Date"></div>
-            <div><input type="number" id="citi_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_citi_mc">$****</span></div>
+            <div><div class="label">Citi Mastercard</div><input type="text" id="date_citi" class="edit-mode hidden" placeholder="Date"></div>
+            <input type="number" id="citi_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_citi_mc">$****</span>
         </div>
         <div class="row">
             <span class="label">Other</span>
@@ -218,27 +215,33 @@
 
 <script>
     let isUnlocked = false;
+    let usdToHkdRate = 7.82; // Default fallback
+
+    async function fetchRate() {
+        try {
+            const res = await fetch('https://open.er-api.com/v6/latest/USD');
+            const data = await res.json();
+            usdToHkdRate = data.rates.HKD;
+            document.getElementById('fx-rate').innerText = `Rate: 1 USD = ${usdToHkdRate.toFixed(2)} HKD`;
+            calculate();
+        } catch (e) {
+            document.getElementById('fx-rate').innerText = "Rate: Offline (Using 7.82)";
+        }
+    }
 
     function checkPasscode() {
-        const pin = prompt("Enter 4-digit passcode to view:");
+        const pin = prompt("Enter 4-digit passcode:");
         if (pin === "0281") {
             isUnlocked = true;
             calculate();
         } else {
-            alert("Incorrect passcode. View restricted.");
+            alert("Wrong code! Data masked.");
         }
     }
 
     function toggleSub(id) {
         const el = document.getElementById(id);
-        const btn = el.previousElementSibling.querySelector('.toggle-btn');
-        if (el.style.display === "block") {
-            el.style.display = "none";
-            btn.innerText = "▶";
-        } else {
-            el.style.display = "block";
-            btn.innerText = "▼";
-        }
+        el.style.display = (el.style.display === "block") ? "none" : "block";
     }
 
     function toggleEdit(isEditing) {
@@ -250,50 +253,50 @@
     }
 
     function saveData() {
-        const inputs = document.querySelectorAll('input');
         const data = {};
-        inputs.forEach(input => { data[input.id] = input.value; });
-        localStorage.setItem('assetData_v2', JSON.stringify(data));
+        document.querySelectorAll('input').forEach(input => data[input.id] = input.value);
+        localStorage.setItem('myAssetData_v3', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('assetData_v2');
+        const saved = localStorage.getItem('myAssetData_v3');
         if (saved) {
             const data = JSON.parse(saved);
-            Object.keys(data).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = data[id];
-            });
+            Object.keys(data).forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = data[id]; });
         }
+        fetchRate();
         checkPasscode();
     }
 
     function calculate() {
         const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-        const format = (val) => isUnlocked ? '$' + val.toLocaleString() : '$****';
+        const format = (val) => isUnlocked ? '$' + Math.round(val).toLocaleString() : '$****';
 
-        // Update displays
-        const ids = ['hsbc_asset', 'mox_dep', 'mox_time', 'futu', 'mfc', 'cash', 'mpf', 'receivables', 'hsbc_em', 'hsbc_gold', 'scb_mc', 'citi_mc', 'other_liab'];
-        ids.forEach(id => {
-            const displayEl = document.getElementById('val_' + id);
-            if(displayEl) displayEl.innerText = format(getVal(id));
-        });
-
+        // Assets
         const moxTotal = getVal('mox_dep') + getVal('mox_time');
-        document.getElementById('val_mox_total').innerText = format(moxTotal);
-
-        // Header Calculations
-        const totalAssets = getVal('hsbc_asset') + moxTotal + getVal('futu') + getVal('mfc') + getVal('cash') + getVal('mpf') + getVal('receivables');
-        const totalLiab = getVal('hsbc_em') + getVal('hsbc_gold') + getVal('scb_mc') + getVal('citi_mc') + getVal('other_liab');
+        const mfcHkd = getVal('mfc_usd') * usdToHkdRate;
         
-        document.getElementById('top-total').innerText = format((totalAssets - getVal('mpf')) - totalLiab);
-        document.getElementById('true-net-worth').innerText = format(totalAssets - totalLiab);
+        const assetsExclMPF = getVal('hsbc_asset') + moxTotal + getVal('futu') + mfcHkd + getVal('cash') + getVal('receivables');
+        const totalAssets = assetsExclMPF + getVal('mpf');
 
-        // Date Remarks
-        const dateIds = ['everymile', 'gold', 'scb', 'citi'];
-        dateIds.forEach(d => {
-            const val = document.getElementById('date_' + d).value || "--";
-            document.getElementById('rem_' + d).innerText = "Pay: " + (isUnlocked ? val : "**");
+        // Liabilities
+        const totalLiab = getVal('hsbc_em') + getVal('hsbc_gold') + getVal('scb_mc') + getVal('citi_mc') + getVal('other_liab');
+
+        // Update Displays
+        document.getElementById('top-total').innerText = format(assetsExclMPF - totalLiab);
+        document.getElementById('true-net-worth').innerText = format(totalAssets - totalLiab);
+        document.getElementById('val_hsbc_asset').innerText = format(getVal('hsbc_asset'));
+        document.getElementById('val_mox_total').innerText = format(moxTotal);
+        document.getElementById('val_mox_dep').innerText = format(getVal('mox_dep'));
+        document.getElementById('val_mox_time').innerText = format(getVal('mox_time'));
+        document.getElementById('val_futu').innerText = format(getVal('futu'));
+        document.getElementById('val_mfc_hkd').innerText = format(mfcHkd);
+        document.getElementById('val_cash').innerText = format(getVal('cash'));
+        document.getElementById('val_mpf').innerText = format(getVal('mpf'));
+        document.getElementById('val_receivables').innerText = format(getVal('receivables'));
+        
+        ['hsbc_em', 'hsbc_gold', 'scb_mc', 'citi_mc', 'other_liab'].forEach(id => {
+            document.getElementById('val_' + id).innerText = format(getVal(id));
         });
     }
 
