@@ -11,7 +11,7 @@
             --pastel-purple: #d8b4fe;
             --accent-purple: #9333ea;
             --text-main: #4b2c5e;
-            --muted-text: #8e7da0;
+            --muted-text: #b1a0c7; /* Lighter grey for dates */
             --pink: #f472b6;
         }
 
@@ -68,7 +68,9 @@
         }
         .row:last-child { border-bottom: none; }
 
+        .label-container { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
         .label { font-weight: 600; font-size: 0.95rem; }
+        .date-display { font-size: 0.75rem; color: var(--muted-text); font-weight: normal; }
         
         input {
             border: 2px solid #f3e8ff;
@@ -79,6 +81,8 @@
             outline: none;
             font-size: 0.9rem;
         }
+
+        input[type="date"] { width: 130px; font-size: 0.8rem; }
 
         .display-val { font-weight: bold; color: var(--accent-purple); }
         .liability-val { color: var(--pink); }
@@ -101,11 +105,7 @@
             margin-right: 5px;
         }
 
-        .rate-info {
-            font-size: 0.65rem;
-            color: var(--muted-text);
-            display: block;
-        }
+        .rate-info { font-size: 0.65rem; color: #b1a0c7; display: block; }
 
         .controls {
             position: sticky;
@@ -186,19 +186,35 @@
     <div class="section-title">💸 Liabilities</div>
     <div class="card">
         <div class="row">
-            <div><div class="label">HSBC Everymile</div><input type="text" id="date_em" class="edit-mode hidden" placeholder="Date"></div>
+            <div class="label-container">
+                <span class="label">HSBC Everymile</span>
+                <span id="show_date_em" class="date-display view-mode"></span>
+                <input type="date" id="date_em" class="edit-mode hidden">
+            </div>
             <input type="number" id="hsbc_em" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_em">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">HSBC Gold</div><input type="text" id="date_gold" class="edit-mode hidden" placeholder="Date"></div>
+            <div class="label-container">
+                <span class="label">HSBC Gold</span>
+                <span id="show_date_gold" class="date-display view-mode"></span>
+                <input type="date" id="date_gold" class="edit-mode hidden">
+            </div>
             <input type="number" id="hsbc_gold" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_gold">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">SCB Mastercard</div><input type="text" id="date_scb" class="edit-mode hidden" placeholder="Date"></div>
+            <div class="label-container">
+                <span class="label">SCB Mastercard</span>
+                <span id="show_date_scb" class="date-display view-mode"></span>
+                <input type="date" id="date_scb" class="edit-mode hidden">
+            </div>
             <input type="number" id="scb_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_scb_mc">$****</span>
         </div>
         <div class="row">
-            <div><div class="label">Citi Mastercard</div><input type="text" id="date_citi" class="edit-mode hidden" placeholder="Date"></div>
+            <div class="label-container">
+                <span class="label">Citi Mastercard</span>
+                <span id="show_date_citi" class="date-display view-mode"></span>
+                <input type="date" id="date_citi" class="edit-mode hidden">
+            </div>
             <input type="number" id="citi_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_citi_mc">$****</span>
         </div>
         <div class="row">
@@ -215,7 +231,7 @@
 
 <script>
     let isUnlocked = false;
-    let usdToHkdRate = 7.82; // Default fallback
+    let usdToHkdRate = 7.82;
 
     async function fetchRate() {
         try {
@@ -224,19 +240,13 @@
             usdToHkdRate = data.rates.HKD;
             document.getElementById('fx-rate').innerText = `Rate: 1 USD = ${usdToHkdRate.toFixed(2)} HKD`;
             calculate();
-        } catch (e) {
-            document.getElementById('fx-rate').innerText = "Rate: Offline (Using 7.82)";
-        }
+        } catch (e) { document.getElementById('fx-rate').innerText = "Rate: 7.82"; }
     }
 
     function checkPasscode() {
         const pin = prompt("Enter 4-digit passcode:");
-        if (pin === "0281") {
-            isUnlocked = true;
-            calculate();
-        } else {
-            alert("Wrong code! Data masked.");
-        }
+        if (pin === "0281") { isUnlocked = true; calculate(); } 
+        else { alert("Access Denied."); }
     }
 
     function toggleSub(id) {
@@ -255,11 +265,11 @@
     function saveData() {
         const data = {};
         document.querySelectorAll('input').forEach(input => data[input.id] = input.value);
-        localStorage.setItem('myAssetData_v3', JSON.stringify(data));
+        localStorage.setItem('myAssetData_v4', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('myAssetData_v3');
+        const saved = localStorage.getItem('myAssetData_v4');
         if (saved) {
             const data = JSON.parse(saved);
             Object.keys(data).forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = data[id]; });
@@ -272,31 +282,29 @@
         const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
         const format = (val) => isUnlocked ? '$' + Math.round(val).toLocaleString() : '$****';
 
-        // Assets
         const moxTotal = getVal('mox_dep') + getVal('mox_time');
         const mfcHkd = getVal('mfc_usd') * usdToHkdRate;
-        
         const assetsExclMPF = getVal('hsbc_asset') + moxTotal + getVal('futu') + mfcHkd + getVal('cash') + getVal('receivables');
         const totalAssets = assetsExclMPF + getVal('mpf');
-
-        // Liabilities
         const totalLiab = getVal('hsbc_em') + getVal('hsbc_gold') + getVal('scb_mc') + getVal('citi_mc') + getVal('other_liab');
 
-        // Update Displays
         document.getElementById('top-total').innerText = format(assetsExclMPF - totalLiab);
         document.getElementById('true-net-worth').innerText = format(totalAssets - totalLiab);
-        document.getElementById('val_hsbc_asset').innerText = format(getVal('hsbc_asset'));
-        document.getElementById('val_mox_total').innerText = format(moxTotal);
-        document.getElementById('val_mox_dep').innerText = format(getVal('mox_dep'));
-        document.getElementById('val_mox_time').innerText = format(getVal('mox_time'));
-        document.getElementById('val_futu').innerText = format(getVal('futu'));
-        document.getElementById('val_mfc_hkd').innerText = format(mfcHkd);
-        document.getElementById('val_cash').innerText = format(getVal('cash'));
-        document.getElementById('val_mpf').innerText = format(getVal('mpf'));
-        document.getElementById('val_receivables').innerText = format(getVal('receivables'));
         
-        ['hsbc_em', 'hsbc_gold', 'scb_mc', 'citi_mc', 'other_liab'].forEach(id => {
-            document.getElementById('val_' + id).innerText = format(getVal(id));
+        // Asset values
+        const assetMap = { hsbc_asset:'val_hsbc_asset', mox_dep:'val_mox_dep', mox_time:'val_mox_time', futu:'val_futu', cash:'val_cash', mpf:'val_mpf', receivables:'val_receivables' };
+        Object.entries(assetMap).forEach(([inId, outId]) => document.getElementById(outId).innerText = format(getVal(inId)));
+        document.getElementById('val_mox_total').innerText = format(moxTotal);
+        document.getElementById('val_mfc_hkd').innerText = format(mfcHkd);
+        
+        // Liability values
+        ['hsbc_em', 'hsbc_gold', 'scb_mc', 'citi_mc', 'other_liab'].forEach(id => document.getElementById('val_' + id).innerText = format(getVal(id)));
+
+        // Date Handling
+        ['em', 'gold', 'scb', 'citi'].forEach(id => {
+            const dateVal = document.getElementById('date_'+id).value;
+            const display = document.getElementById('show_date_'+id);
+            display.innerText = (isUnlocked && dateVal) ? `(${dateVal})` : (dateVal ? "(****)" : "");
         });
     }
 
