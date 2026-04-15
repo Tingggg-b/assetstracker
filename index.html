@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Tracker</title>
+    <title>My Assets ✨</title>
     <style>
         :root {
-            --bg-color: #f4f7f6;
+            --bg-color: #fcf8ff;
             --card-bg: #ffffff;
-            --primary-blue: #2563eb;
-            --danger-red: #dc2626;
-            --text-main: #1f2937;
+            --pastel-purple: #d8b4fe; /* Pastel Purple */
+            --accent-purple: #9333ea;
+            --text-main: #4b2c5e;
+            --muted-text: #8e7da0;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -26,231 +27,208 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
         }
 
         .header-card {
-            background: var(--primary-blue);
+            background: var(--pastel-purple);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 25px 20px;
+            border-radius: 25px;
             text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(216, 180, 254, 0.4);
         }
 
-        .header-card h1 { margin: 0; font-size: 1.2rem; opacity: 0.9; }
-        .header-card .total-amt { font-size: 2.2rem; font-weight: bold; margin: 10px 0; }
+        .header-card h1 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; }
+        .header-card .sub-label { font-size: 0.85rem; opacity: 0.9; font-weight: normal; margin-top: 2px; }
+        .header-card .total-amt { font-size: 2.5rem; font-weight: bold; margin: 15px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
 
         .section-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
-            margin: 20px 0 10px 5px;
-            display: flex;
-            justify-content: space-between;
+            margin: 25px 0 12px 10px;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 2px solid #f3e8ff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
         .row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
+            border-bottom: 1px weight thin solid #f9f5ff;
         }
+        .row:last-child { border-bottom: none; }
 
-        .label { font-weight: 500; }
+        .label { font-weight: 600; font-size: 0.95rem; }
         
         input[type="number"], input[type="text"] {
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            border: 2px solid #f3e8ff;
+            border-radius: 10px;
             padding: 8px;
-            width: 120px;
+            width: 110px;
             text-align: right;
-            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s;
         }
+        input:focus { border-color: var(--pastel-purple); }
 
-        .display-val { font-weight: bold; color: #059669; }
-        .liability-val { color: var(--danger-red); }
+        .display-val { font-weight: bold; color: var(--accent-purple); }
+        .liability-val { color: #f472b6; } /* Pastel Pink for liabilities */
 
         .sub-section {
-            margin-left: 15px;
-            border-left: 2px solid #e5e7eb;
-            padding-left: 10px;
+            margin-left: 20px;
+            padding-left: 15px;
+            border-left: 2px dashed var(--pastel-purple);
             display: none;
         }
 
         .toggle-btn {
-            background: none;
+            background: #f3e8ff;
             border: none;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 1rem;
-            padding: 0 5px;
+            font-size: 0.7rem;
+            width: 22px;
+            height: 22px;
+            color: var(--accent-purple);
+            margin-right: 5px;
         }
 
         .remark {
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 4px;
+            font-size: 0.75rem;
+            color: var(--muted-text);
+            margin-top: 3px;
         }
 
         .controls {
             position: sticky;
             bottom: 20px;
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            justify-content: center;
+            margin-top: 30px;
         }
 
         button.main-btn {
-            padding: 12px 24px;
-            border-radius: 25px;
+            padding: 14px 35px;
+            border-radius: 30px;
             border: none;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(147, 51, 234, 0.3);
+            transition: transform 0.2s;
         }
+        button.main-btn:active { transform: scale(0.95); }
 
-        .edit-btn { background: #1f2937; color: white; }
-        .save-btn { background: #059669; color: white; display: none; }
+        .edit-btn { background: var(--accent-purple); color: white; }
+        .save-btn { background: #10b981; color: white; display: none; }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
+        .blur { filter: blur(4px); opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainContent">
     <div class="header-card">
-        <h1>Net Liquid Assets (Excl. MPF)</h1>
-        <div class="total-amt" id="top-total">$0</div>
-        <div style="font-size: 0.9rem; opacity: 0.8;">Total Net Worth: <span id="true-net-worth">$0</span></div>
+        <h1>Total Assets</h1>
+        <div class="sub-label">excl. MPF</div>
+        <div class="total-amt" id="top-total">$****</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Total Net Worth: <span id="true-net-worth">$****</span></div>
     </div>
 
-    <div class="section-title">Assets</div>
-    
+    <div class="section-title">✨ Assets</div>
     <div class="card">
         <div class="row">
             <span class="label">HSBC Bank</span>
             <input type="number" id="hsbc_asset" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_hsbc_asset">$0</span>
+            <span class="display-val view-mode" id="val_hsbc_asset">$****</span>
         </div>
-
         <div class="row">
-            <span class="label">
-                <button class="toggle-btn" onclick="toggleSub('mox-subs')">▶</button> Mox Bank
-            </span>
-            <span class="display-val" id="val_mox_total">$0</span>
+            <span class="label"><button class="toggle-btn" onclick="toggleSub('mox-subs')">▶</button> Mox Bank</span>
+            <span class="display-val" id="val_mox_total">$****</span>
         </div>
         <div id="mox-subs" class="sub-section">
-            <div class="row">
-                <span>Deposit</span>
-                <input type="number" id="mox_dep" class="edit-mode hidden" value="0">
-                <span id="val_mox_dep" class="view-mode">$0</span>
-            </div>
-            <div class="row">
-                <span>Time Deposit</span>
-                <input type="number" id="mox_time" class="edit-mode hidden" value="0">
-                <span id="val_mox_time" class="view-mode">$0</span>
-            </div>
+            <div class="row"><span>Deposit</span><input type="number" id="mox_dep" class="edit-mode hidden"><span id="val_mox_dep" class="view-mode">$****</span></div>
+            <div class="row"><span>Time Deposit</span><input type="number" id="mox_time" class="edit-mode hidden"><span id="val_mox_time" class="view-mode">$****</span></div>
         </div>
-
         <div class="row">
             <span class="label">Futu</span>
-            <input type="number" id="futu" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_futu">$0</span>
+            <input type="number" id="futu" class="edit-mode hidden"><span class="display-val view-mode" id="val_futu">$****</span>
         </div>
         <div class="row">
             <span class="label">MFC Stocks</span>
-            <input type="number" id="mfc" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_mfc">$0</span>
+            <input type="number" id="mfc" class="edit-mode hidden"><span class="display-val view-mode" id="val_mfc">$****</span>
         </div>
         <div class="row">
             <span class="label">Cash</span>
-            <input type="number" id="cash" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_cash">$0</span>
+            <input type="number" id="cash" class="edit-mode hidden"><span class="display-val view-mode" id="val_cash">$****</span>
         </div>
         <div class="row">
             <span class="label">MPF</span>
-            <input type="number" id="mpf" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_mpf">$0</span>
+            <input type="number" id="mpf" class="edit-mode hidden"><span class="display-val view-mode" id="val_mpf">$****</span>
         </div>
         <div class="row">
             <span class="label">Receivables</span>
-            <input type="number" id="receivables" class="edit-mode hidden" value="0">
-            <span class="display-val view-mode" id="val_receivables">$0</span>
+            <input type="number" id="receivables" class="edit-mode hidden"><span class="display-val view-mode" id="val_receivables">$****</span>
         </div>
     </div>
 
-    <div class="section-title">Liabilities</div>
-    <div class="card" id="liabilities-container">
+    <div class="section-title">💸 Liabilities</div>
+    <div class="card">
         <div class="row">
-            <div>
-                <div class="label">HSBC Everymile</div>
-                <div class="remark" id="rem_everymile">Pay: --</div>
-                <input type="text" id="date_everymile" class="edit-mode hidden" placeholder="Pay date">
-            </div>
-            <div>
-                <input type="number" id="hsbc_em" class="edit-mode hidden" value="0">
-                <span class="display-val liability-val view-mode" id="val_hsbc_em">$0</span>
-            </div>
+            <div><div class="label">HSBC Everymile</div><div class="remark" id="rem_everymile">Pay: --</div><input type="text" id="date_everymile" class="edit-mode hidden" placeholder="Date"></div>
+            <div><input type="number" id="hsbc_em" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_em">$****</span></div>
         </div>
-
         <div class="row">
-            <div>
-                <div class="label">HSBC Gold</div>
-                <div class="remark" id="rem_gold">Pay: --</div>
-                <input type="text" id="date_gold" class="edit-mode hidden" placeholder="Pay date">
-            </div>
-            <div>
-                <input type="number" id="hsbc_gold" class="edit-mode hidden" value="0">
-                <span class="display-val liability-val view-mode" id="val_hsbc_gold">$0</span>
-            </div>
+            <div><div class="label">HSBC Gold</div><div class="remark" id="rem_gold">Pay: --</div><input type="text" id="date_gold" class="edit-mode hidden" placeholder="Date"></div>
+            <div><input type="number" id="hsbc_gold" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_hsbc_gold">$****</span></div>
         </div>
-
         <div class="row">
-            <div>
-                <div class="label">SCB Mastercard</div>
-                <div class="remark" id="rem_scb">Pay: --</div>
-                <input type="text" id="date_scb" class="edit-mode hidden" placeholder="Pay date">
-            </div>
-            <div>
-                <input type="number" id="scb_mc" class="edit-mode hidden" value="0">
-                <span class="display-val liability-val view-mode" id="val_scb_mc">$0</span>
-            </div>
+            <div><div class="label">SCB Mastercard</div><div class="remark" id="rem_scb">Pay: --</div><input type="text" id="date_scb" class="edit-mode hidden" placeholder="Date"></div>
+            <div><input type="number" id="scb_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_scb_mc">$****</span></div>
         </div>
-
         <div class="row">
-            <div>
-                <div class="label">Citi Mastercard</div>
-                <div class="remark" id="rem_citi">Pay: --</div>
-                <input type="text" id="date_citi" class="edit-mode hidden" placeholder="Pay date">
-            </div>
-            <div>
-                <input type="number" id="citi_mc" class="edit-mode hidden" value="0">
-                <span class="display-val liability-val view-mode" id="val_citi_mc">$0</span>
-            </div>
+            <div><div class="label">Citi Mastercard</div><div class="remark" id="rem_citi">Pay: --</div><input type="text" id="date_citi" class="edit-mode hidden" placeholder="Date"></div>
+            <div><input type="number" id="citi_mc" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_citi_mc">$****</span></div>
         </div>
-
         <div class="row">
-            <span class="label">Other Liabilities</span>
-            <input type="number" id="other_liab" class="edit-mode hidden" value="0">
-            <span class="display-val liability-val view-mode" id="val_other_liab">$0</span>
+            <span class="label">Other</span>
+            <input type="number" id="other_liab" class="edit-mode hidden"><span class="display-val liability-val view-mode" id="val_other_liab">$****</span>
         </div>
     </div>
 
     <div class="controls">
-        <button id="editBtn" class="main-btn edit-btn" onclick="toggleEdit(true)">Edit Assets</button>
-        <button id="saveBtn" class="main-btn save-btn" onclick="toggleEdit(false)">Exit & Save</button>
+        <button id="editBtn" class="main-btn edit-btn" onclick="toggleEdit(true)">Edit Details ✨</button>
+        <button id="saveBtn" class="main-btn save-btn" onclick="toggleEdit(false)">Save & Close 🌸</button>
     </div>
 </div>
 
 <script>
+    let isUnlocked = false;
+
+    function checkPasscode() {
+        const pin = prompt("Enter 4-digit passcode to view:");
+        if (pin === "0281") {
+            isUnlocked = true;
+            calculate();
+        } else {
+            alert("Incorrect passcode. View restricted.");
+        }
+    }
+
     function toggleSub(id) {
         const el = document.getElementById(id);
         const btn = el.previousElementSibling.querySelector('.toggle-btn');
@@ -268,24 +246,18 @@
         document.querySelectorAll('.view-mode').forEach(el => el.classList.toggle('hidden', isEditing));
         document.getElementById('editBtn').style.display = isEditing ? 'none' : 'block';
         document.getElementById('saveBtn').style.display = isEditing ? 'block' : 'none';
-        
-        if (!isEditing) {
-            saveData();
-            calculate();
-        }
+        if (!isEditing) { saveData(); calculate(); }
     }
 
     function saveData() {
         const inputs = document.querySelectorAll('input');
         const data = {};
-        inputs.forEach(input => {
-            data[input.id] = input.value;
-        });
-        localStorage.setItem('assetData', JSON.stringify(data));
+        inputs.forEach(input => { data[input.id] = input.value; });
+        localStorage.setItem('assetData_v2', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('assetData');
+        const saved = localStorage.getItem('assetData_v2');
         if (saved) {
             const data = JSON.parse(saved);
             Object.keys(data).forEach(id => {
@@ -293,64 +265,38 @@
                 if (el) el.value = data[id];
             });
         }
-        calculate();
+        checkPasscode();
     }
 
     function calculate() {
         const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-        const setDisp = (id, val) => document.getElementById('val_' + id).innerText = '$' + val.toLocaleString();
+        const format = (val) => isUnlocked ? '$' + val.toLocaleString() : '$****';
 
-        // Assets
-        const hsbc = getVal('hsbc_asset');
-        const moxDep = getVal('mox_dep');
-        const moxTime = getVal('mox_time');
-        const moxTotal = moxDep + moxTime;
-        const futu = getVal('futu');
-        const mfc = getVal('mfc');
-        const cash = getVal('cash');
-        const mpf = getVal('mpf');
-        const recv = getVal('receivables');
+        // Update displays
+        const ids = ['hsbc_asset', 'mox_dep', 'mox_time', 'futu', 'mfc', 'cash', 'mpf', 'receivables', 'hsbc_em', 'hsbc_gold', 'scb_mc', 'citi_mc', 'other_liab'];
+        ids.forEach(id => {
+            const displayEl = document.getElementById('val_' + id);
+            if(displayEl) displayEl.innerText = format(getVal(id));
+        });
 
-        setDisp('hsbc_asset', hsbc);
-        setDisp('mox_dep', moxDep);
-        setDisp('mox_time', moxTime);
-        document.getElementById('val_mox_total').innerText = '$' + moxTotal.toLocaleString();
-        setDisp('futu', futu);
-        setDisp('mfc', mfc);
-        setDisp('cash', cash);
-        setDisp('mpf', mpf);
-        setDisp('receivables', recv);
+        const moxTotal = getVal('mox_dep') + getVal('mox_time');
+        document.getElementById('val_mox_total').innerText = format(moxTotal);
 
-        // Liabilities
-        const h_em = getVal('hsbc_em');
-        const h_gd = getVal('hsbc_gold');
-        const s_mc = getVal('scb_mc');
-        const c_mc = getVal('citi_mc');
-        const oth = getVal('other_liab');
-
-        setDisp('hsbc_em', h_em);
-        setDisp('hsbc_gold', h_gd);
-        setDisp('scb_mc', s_mc);
-        setDisp('citi_mc', c_mc);
-        setDisp('other_liab', oth);
-
-        // Dates
-        document.getElementById('rem_everymile').innerText = "Pay: " + (document.getElementById('date_everymile').value || "--");
-        document.getElementById('rem_gold').innerText = "Pay: " + (document.getElementById('date_gold').value || "--");
-        document.getElementById('rem_scb').innerText = "Pay: " + (document.getElementById('date_scb').value || "--");
-        document.getElementById('rem_citi').innerText = "Pay: " + (document.getElementById('date_citi').value || "--");
-
-        const totalAssets = hsbc + moxTotal + futu + mfc + cash + mpf + recv;
-        const totalLiab = h_em + h_gd + s_mc + c_mc + oth;
+        // Header Calculations
+        const totalAssets = getVal('hsbc_asset') + moxTotal + getVal('futu') + getVal('mfc') + getVal('cash') + getVal('mpf') + getVal('receivables');
+        const totalLiab = getVal('hsbc_em') + getVal('hsbc_gold') + getVal('scb_mc') + getVal('citi_mc') + getVal('other_liab');
         
-        const netExMPF = (totalAssets - mpf) - totalLiab;
-        const netTotal = totalAssets - totalLiab;
+        document.getElementById('top-total').innerText = format((totalAssets - getVal('mpf')) - totalLiab);
+        document.getElementById('true-net-worth').innerText = format(totalAssets - totalLiab);
 
-        document.getElementById('top-total').innerText = '$' + netExMPF.toLocaleString();
-        document.getElementById('true-net-worth').innerText = '$' + netTotal.toLocaleString();
+        // Date Remarks
+        const dateIds = ['everymile', 'gold', 'scb', 'citi'];
+        dateIds.forEach(d => {
+            const val = document.getElementById('date_' + d).value || "--";
+            document.getElementById('rem_' + d).innerText = "Pay: " + (isUnlocked ? val : "**");
+        });
     }
 
-    // Initial Load
     window.onload = loadData;
 </script>
 
