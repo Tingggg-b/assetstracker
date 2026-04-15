@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .collapsible { cursor: pointer; padding: 10px; border: none; text-align: left; outline: none; font-size: 15px; }
+        .content { padding: 0 18px; display: none; overflow: hidden; }
+    </style>
+    <script>
+        function toggleEditMode() {
+            const inputs = document.querySelectorAll('.editable');
+            inputs.forEach(input => input.disabled = !input.disabled);
+        }
+        function toggleCollapse(element) {
+            const content = element.nextElementSibling;
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <h1>Asset Tracker</h1>
+    <button onclick="toggleEditMode()">Toggle Edit Mode</button>
+    <h2>Assets</h2>
+    <button class="collapsible" onclick="toggleCollapse(this)">HSBC</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">Mox</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+        <h4>Sub-Categories</h4>
+        <input type="number" class="editable" placeholder="Sub-value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">Futu</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">MFC Stocks</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">Cash</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">MPF</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">Receivables</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <h2>Liabilities</h2>
+    <button class="collapsible" onclick="toggleCollapse(this)">Credit Cards</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <button class="collapsible" onclick="toggleCollapse(this)">Loans</button>
+    <div class="content">
+        <input type="number" class="editable" placeholder="Value" />
+    </div>
+    <h2>Net Worth Calculation</h2>
+    <div id="net-worth"><strong>Net Worth: </strong><span id="net-worth-value">0</span></div>
+    <script>
+        // Functionality to calculate net worth could be added here
+    </script>
+</body>
+</html>
