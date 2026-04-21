@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Tracker ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Varela+Round&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -15,10 +15,11 @@
             --text-main: #4b2c5e;
             --muted-text: #b1a0c7;
             --pink: #f472b6;
+            --mint: #bbf7d0;
         }
 
         body {
-            font-family: 'Varela Round', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -32,7 +33,6 @@
         .page { display: none; width: 100%; }
         .active-page { display: block; }
 
-        /* Top Buttons */
         .top-controls {
             display: flex;
             justify-content: space-between;
@@ -41,7 +41,6 @@
             gap: 10px;
         }
 
-        /* Header */
         .header-card {
             background: var(--pastel-purple);
             color: white;
@@ -53,9 +52,14 @@
         }
 
         .total-amt { font-size: 2.3rem; font-weight: bold; margin: 10px 0; }
-        .mask-text { font-family: 'Cherry Bomb One', cursive; letter-spacing: 3px; opacity: 0.9; }
+        
+        .mask-text { 
+            font-family: 'Cherry Bomb One', cursive; 
+            letter-spacing: 3px; 
+            opacity: 0.9; 
+            font-weight: normal;
+        }
 
-        /* Nav */
         .nav-bar {
             position: fixed;
             bottom: 0;
@@ -72,7 +76,6 @@
         .nav-item { border: none; background: none; color: var(--muted-text); font-weight: bold; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; font-family: inherit; }
         .nav-item.active { color: var(--accent-purple); }
 
-        /* Card Styling */
         .card { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 2px solid #f3e8ff; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f5ff; }
         .label { font-weight: 600; font-size: 0.9rem; }
@@ -89,9 +92,9 @@
         .btn-hide { background: white; color: var(--accent-purple); border: 2px solid var(--pastel-purple); }
         .btn-edit { background: var(--accent-purple); color: white; }
         .btn-save { background: #10b981; color: white; }
-        .btn-snap { background: var(--pink); color: white; width: 100%; border-radius: 20px; padding: 15px; margin-bottom: 20px; }
+        .btn-snap { background: var(--pink); color: white; width: 100%; border-radius: 20px; padding: 15px; margin-bottom: 20px; font-family: inherit; }
 
-        #chart-container { width: 100%; height: 250px; margin-bottom: 20px; }
+        #chart-container { width: 100%; height: 320px; margin-bottom: 20px; }
 
         .sub-section { margin-left: 15px; padding-left: 10px; border-left: 2px dashed var(--pastel-purple); display: none; }
         .hidden { display: none !important; }
@@ -111,7 +114,7 @@
         <div class="header-card">
             <div style="font-size: 0.9rem;">Total Assets (excl. MPF)</div>
             <div class="total-amt" id="top-total">$0</div>
-            <div style="font-size: 0.8rem; opacity: 0.9;">Net Worth: <span id="total-net-worth">$0</span></div>
+            <div style="font-size: 0.8rem; opacity: 0.9;">Net Worth: <span id="true-net-worth">$0</span></div>
         </div>
 
         <div class="card">
@@ -131,7 +134,7 @@
             <div class="row"><span class="label">MPF</span><input type="number" id="mpf" class="edit-mode hidden"><span class="display-val view-mode" id="v_mpf"></span></div>
         </div>
 
-        <div style="font-size: 0.8rem; font-weight: bold; margin: 10px; color: var(--accent-purple);">LIABILITIES</div>
+        <div style="font-size: 0.75rem; font-weight: bold; margin: 10px; color: var(--accent-purple); letter-spacing: 1px;">LIABILITIES</div>
         <div class="card">
             <div class="row">
                 <div><span class="label">Everymile</span> <span id="v_date_em" class="date-display"></span><input type="date" id="date_em" class="edit-mode hidden"></div>
@@ -155,7 +158,7 @@
 
     <div id="page-history" class="page">
         <div class="header-card" style="background: var(--pink);">
-            <div style="font-size: 1.2rem; font-weight: bold;">History & Charts</div>
+            <div style="font-size: 1.1rem; font-weight: bold;">History & Analytics</div>
         </div>
         
         <div class="card" id="chart-container">
@@ -176,7 +179,7 @@
 <script>
     let isHidden = false;
     let usdRate = 7.82;
-    let historyData = JSON.parse(localStorage.getItem('assetHistory_v7') || '[]');
+    let historyData = JSON.parse(localStorage.getItem('assetHistory_v9') || '[]');
     let myChart = null;
 
     async function fetchRate() {
@@ -221,7 +224,7 @@
     function saveData() {
         const data = {};
         document.querySelectorAll('input').forEach(i => data[i.id] = i.value);
-        localStorage.setItem('assetData_v7', JSON.stringify(data));
+        localStorage.setItem('assetData_v9', JSON.stringify(data));
     }
 
     function calculate() {
@@ -259,8 +262,8 @@
             mpf: getV('mpf'),
             liab: getV('h_em') + getV('h_gold') + getV('s_mc') + getV('c_mc') + getV('other')
         };
-        historyData.push(snap); // Push to end for chart order
-        localStorage.setItem('assetHistory_v7', JSON.stringify(historyData));
+        historyData.push(snap); 
+        localStorage.setItem('assetHistory_v9', JSON.stringify(historyData));
         renderHistory();
         updateChart();
     }
@@ -272,13 +275,13 @@
             <div class="card" style="font-size:0.85rem">
                 <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--pink)">
                     <span>${s.date}</span>
-                    <span>Total: $${Math.round(s.cash + s.stocks + s.mpf - s.liab).toLocaleString()}</span>
+                    <span>$${Math.round(s.cash + s.stocks + s.mpf - s.liab).toLocaleString()}</span>
                 </div>
                 <div style="margin-top:8px; opacity:0.8">
                     Cash: $${Math.round(s.cash).toLocaleString()} | Stocks: $${Math.round(s.stocks).toLocaleString()}<br>
                     MPF: $${Math.round(s.mpf).toLocaleString()} | Liab: -$${Math.round(s.liab).toLocaleString()}
                 </div>
-                <button onclick="deleteSnap(${historyData.length - 1 - index})" style="background:none; border:none; color:var(--muted-text); font-size:0.7rem; margin-top:10px; cursor:pointer;">Delete Record</button>
+                <button onclick="deleteSnap(${historyData.length - 1 - index})" style="background:none; border:none; color:var(--muted-text); font-size:0.7rem; margin-top:10px; cursor:pointer;">Remove</button>
             </div>
         `).join('');
     }
@@ -286,7 +289,7 @@
     function deleteSnap(i) {
         if(confirm("Delete this snapshot?")) {
             historyData.splice(i, 1);
-            localStorage.setItem('assetHistory_v7', JSON.stringify(historyData));
+            localStorage.setItem('assetHistory_v9', JSON.stringify(historyData));
             renderHistory();
             updateChart();
         }
@@ -295,35 +298,59 @@
     function updateChart() {
         const ctx = document.getElementById('assetChart').getContext('2d');
         const labels = historyData.map(s => s.date);
-        const totals = historyData.map(s => Math.round(s.cash + s.stocks + s.mpf - s.liab));
-
+        
         if (myChart) myChart.destroy();
 
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Net Worth',
-                    data: totals,
-                    backgroundColor: '#d8b4fe',
-                    borderRadius: 8,
-                }]
+                datasets: [
+                    {
+                        label: 'Cash Group',
+                        data: historyData.map(s => Math.round(s.cash)),
+                        backgroundColor: '#d8b4fe', // Pastel Purple
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Stocks',
+                        data: historyData.map(s => Math.round(s.stocks)),
+                        backgroundColor: '#f472b6', // Pastel Pink
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'MPF',
+                        data: historyData.map(s => Math.round(s.mpf)),
+                        backgroundColor: '#bbf7d0', // Pastel Mint
+                        borderRadius: 4
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } 
+                },
                 scales: {
-                    y: { beginAtZero: true, grid: { display: false } },
-                    x: { grid: { display: false } }
+                    x: { stacked: true, grid: { display: false } },
+                    y: { 
+                        stacked: true, 
+                        grid: { color: '#f3e8ff' },
+                        ticks: {
+                            stepSize: 200000,
+                            callback: function(value) {
+                                return (value / 1000) + 'k';
+                            }
+                        }
+                    }
                 }
             }
         });
     }
 
     window.onload = () => {
-        const saved = localStorage.getItem('assetData_v7');
+        const saved = localStorage.getItem('assetData_v9');
         if (saved) {
             const data = JSON.parse(saved);
             Object.keys(data).forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = data[id]; });
