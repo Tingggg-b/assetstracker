@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Tracker ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Varela+Round&display=swap" rel="stylesheet">
+    <title>Asset Tracker</title>
     <style>
         :root {
             --bg-color: #fcf8ff;
@@ -17,7 +16,7 @@
         }
 
         body {
-            font-family: 'Varela Round', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -31,6 +30,15 @@
         .page { display: none; width: 100%; }
         .active-page { display: block; }
 
+        /* Top Controls */
+        .top-nav-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
         /* Header */
         .header-card {
             background: var(--pastel-purple);
@@ -39,12 +47,11 @@
             border-radius: 25px;
             text-align: center;
             margin-bottom: 25px;
-            position: relative;
             box-shadow: 0 8px 20px rgba(216, 180, 254, 0.4);
         }
 
-        .total-amt { font-size: 2.3rem; font-weight: bold; margin: 15px 0; }
-        .mask-text { font-family: 'Cherry Bomb One', cursive; letter-spacing: 4px; color: #fff; opacity: 0.8; }
+        .total-amt { font-size: 2.3rem; font-weight: bold; margin: 10px 0; }
+        .mask-text { letter-spacing: 2px; font-weight: bold; opacity: 0.8; }
 
         /* Navigation */
         .nav-bar {
@@ -55,36 +62,45 @@
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
+            padding: 18px 0;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
             z-index: 1000;
         }
 
-        .nav-item { border: none; background: none; color: var(--muted-text); font-weight: bold; cursor: pointer; font-family: inherit; }
+        .nav-item { border: none; background: none; color: var(--muted-text); font-weight: bold; cursor: pointer; font-size: 1rem; font-family: inherit; text-transform: uppercase; letter-spacing: 1px; }
         .nav-item.active { color: var(--accent-purple); }
 
-        /* Cards & Rows */
+        /* Cards */
         .card { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 2px solid #f3e8ff; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f5ff; }
         .label { font-weight: 600; font-size: 0.9rem; }
         .date-display { font-size: 0.75rem; color: var(--muted-text); }
         
-        input { border: 2px solid #f3e8ff; border-radius: 10px; padding: 8px; width: 90px; text-align: right; outline: none; }
+        input { border: 2px solid #f3e8ff; border-radius: 10px; padding: 8px; width: 90px; text-align: right; outline: none; font-family: inherit; }
         input[type="date"] { width: 120px; }
 
         .display-val { font-weight: bold; color: var(--accent-purple); }
-        .masked-val { font-family: 'Cherry Bomb One', cursive; color: var(--pastel-purple); font-size: 1.2rem; }
 
         /* Buttons */
-        .toggle-btn { background: #f3e8ff; border: none; border-radius: 50%; width: 22px; height: 22px; color: var(--accent-purple); margin-right: 5px; }
-        .action-btn { padding: 10px 20px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-hide { background: white; color: var(--accent-purple); border: 2px solid var(--pastel-purple); margin-bottom: 10px; }
-        .btn-save { background: var(--accent-purple); color: white; width: 100%; margin-top: 10px; }
-        .btn-snapshot { background: var(--pink); color: white; width: 100%; margin-top: 10px; }
+        .toggle-btn { background: #f3e8ff; border: none; border-radius: 50%; width: 22px; height: 22px; color: var(--accent-purple); margin-right: 5px; cursor: pointer; }
+        
+        .action-btn { 
+            flex: 1;
+            padding: 12px; 
+            border-radius: 15px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
 
-        /* Table */
+        .btn-hide { background: white; color: var(--accent-purple); border: 2px solid var(--pastel-purple); }
+        .btn-edit { background: var(--accent-purple); color: white; }
+        .btn-save { background: #10b981; color: white; }
+        .btn-snapshot { background: var(--pink); color: white; width: 100%; margin-top: 10px; padding: 15px; border-radius: 20px; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
-        th { text-align: left; color: var(--accent-purple); padding-bottom: 10px; }
         td { padding: 8px 0; border-bottom: 1px solid #f3e8ff; }
 
         .sub-section { margin-left: 15px; padding-left: 10px; border-left: 2px dashed var(--pastel-purple); display: none; }
@@ -96,11 +112,15 @@
 <div class="container">
     
     <div id="page-tracker" class="page active-page">
-        <button class="action-btn btn-hide" onclick="togglePrivacy()" id="privacyBtn">👁️ Hide Amounts</button>
+        <div class="top-nav-controls">
+            <button class="action-btn btn-hide" onclick="togglePrivacy()" id="privacyBtn">Hide Amounts</button>
+            <button id="editBtn" class="action-btn btn-edit" onclick="toggleEdit(true)">Edit Details</button>
+            <button id="saveBtn" class="action-btn btn-save hidden" onclick="toggleEdit(false)">Save & Close</button>
+        </div>
         
         <div class="header-card">
-            <h1 style="font-size: 1.2rem; margin: 0;">Total Assets</h1>
-            <div style="font-size: 0.8rem; opacity: 0.9;">excl. MPF</div>
+            <div style="font-size: 0.9rem; font-weight: 600;">Total Assets</div>
+            <div style="font-size: 0.75rem; opacity: 0.9;">excl. MPF</div>
             <div class="total-amt" id="top-total">$0</div>
             <div style="font-size: 0.8rem; opacity: 0.9;">True Net Worth: <span id="true-net-worth">$0</span></div>
         </div>
@@ -117,15 +137,15 @@
             </div>
             <div class="row"><span class="label">Futu</span><input type="number" id="futu" class="edit-mode hidden"><span class="display-val view-mode" id="v_futu"></span></div>
             <div class="row">
-                <span class="label">MFC Stocks (USD)<br><small id="fx-rate" style="color:var(--muted-text)">Rate: 7.8</small></span>
+                <span class="label">MFC Stocks (USD)<br><small id="fx-rate" style="color:var(--muted-text); font-weight: normal;">Rate: 7.82</small></span>
                 <div><input type="number" id="mfc_usd" class="edit-mode hidden"><span class="display-val view-mode" id="v_mfc"></span></div>
             </div>
-            <div class="row"><span class="label">Cash</span><input type="number" id="cash" class="edit-mode hidden"><span class="display-val view-mode" id="v_cash"></span></div>
+            <div class="row"><span class="label">Cash</span><input type="number" id="cash" class="edit-mode hidden"><span class="display-val view-mode" id="val_cash"></span></div>
             <div class="row"><span class="label">Receivables</span><input type="number" id="recv" class="edit-mode hidden"><span class="display-val view-mode" id="v_recv"></span></div>
             <div class="row"><span class="label">MPF</span><input type="number" id="mpf" class="edit-mode hidden"><span class="display-val view-mode" id="v_mpf"></span></div>
         </div>
 
-        <div style="font-size: 0.9rem; font-weight: bold; margin: 10px;">💸 Liabilities</div>
+        <div style="font-size: 0.85rem; font-weight: bold; margin: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-purple);">Liabilities</div>
         <div class="card">
             <div class="row">
                 <div><span class="label">Everymile</span> <span id="v_date_em" class="date-display view-mode"></span><input type="date" id="date_em" class="edit-mode hidden"></div>
@@ -145,28 +165,22 @@
             </div>
             <div class="row"><span class="label">Other</span><input type="number" id="other" class="edit-mode hidden"><span class="display-val view-mode" id="v_other" style="color:var(--pink)"></span></div>
         </div>
-
-        <button id="editBtn" class="action-btn btn-save" onclick="toggleEdit(true)">Edit Assets ✨</button>
-        <button id="saveBtn" class="action-btn btn-save hidden" onclick="toggleEdit(false)">Save Changes 🌸</button>
     </div>
 
     <div id="page-history" class="page">
         <div class="header-card" style="background: var(--pink);">
-            <h1>Month Snapshots</h1>
-            <p style="font-size: 0.8rem;">Archive your progress</p>
+            <div style="font-size: 1rem; font-weight: bold;">Snapshot Records</div>
         </div>
         
-        <button class="action-btn btn-snapshot" onclick="takeSnapshot()">📸 Save Current as Monthly Snapshot</button>
-
-        <div id="snapshot-list">
-            </div>
+        <button class="action-btn btn-snapshot" onclick="takeSnapshot()">Save Monthly Snapshot</button>
+        <div id="snapshot-list"></div>
     </div>
 
 </div>
 
 <div class="nav-bar">
-    <button class="nav-item active" id="nav-tracker" onclick="showPage('tracker')">🏠 Dashboard</button>
-    <button class="nav-item" id="nav-history" onclick="showPage('history')">📊 History</button>
+    <button class="nav-item active" id="nav-tracker" onclick="showPage('tracker')">Dashboard</button>
+    <button class="nav-item" id="nav-history" onclick="showPage('history')">History</button>
 </div>
 
 <script>
@@ -194,7 +208,7 @@
 
     function togglePrivacy() {
         isHidden = !isHidden;
-        document.getElementById('privacyBtn').innerText = isHidden ? "👁️ Show Amounts" : "👁️ Hide Amounts";
+        document.getElementById('privacyBtn').innerText = isHidden ? "Show Amounts" : "Hide Amounts";
         calculate();
     }
 
@@ -214,30 +228,26 @@
     function saveData() {
         const data = {};
         document.querySelectorAll('input').forEach(i => data[i.id] = i.value);
-        localStorage.setItem('assetData_v5', JSON.stringify(data));
+        localStorage.setItem('assetData_v6', JSON.stringify(data));
     }
 
     function calculate() {
         const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
-        const fmt = (v, isHeader = false) => {
-            if (isHidden) return `<span class="mask-text">****</span>`;
-            return (isHeader ? '$' : '$') + Math.round(v).toLocaleString();
-        };
+        const fmt = (v) => isHidden ? `<span class="mask-text">****</span>` : '$' + Math.round(v).toLocaleString();
 
         const mox = getV('mox_dep') + getV('mox_time');
         const mfc = getV('mfc_usd') * usdRate;
-        const cash = getV('hsbc') + mox + getV('cash') + getV('recv');
-        const stocks = getV('futu') + mfc;
-        const liab = getV('h_em') + getV('h_gold') + getV('s_mc') + getV('c_mc') + getV('other');
+        const cashGroup = getV('hsbc') + mox + getV('cash') + getV('recv');
+        const stockGroup = getV('futu') + mfc;
+        const liabGroup = getV('h_em') + getV('h_gold') + getV('s_mc') + getV('c_mc') + getV('other');
         
-        const totalExMPF = (cash + stocks) - liab;
+        const totalExMPF = (cashGroup + stockGroup) - liabGroup;
         const netWorth = totalExMPF + getV('mpf');
 
-        document.getElementById('top-total').innerHTML = fmt(totalExMPF, true);
-        document.getElementById('true-net-worth').innerHTML = fmt(netWorth, true);
+        document.getElementById('top-total').innerHTML = fmt(totalExMPF);
+        document.getElementById('true-net-worth').innerHTML = fmt(netWorth);
 
-        // Update UI
-        const fields = {v_hsbc:'hsbc', v_mox_total:mox, v_mox_dep:'mox_dep', v_mox_time:'mox_time', v_futu:'futu', v_mfc:mfc, v_cash:'cash', v_recv:'recv', v_mpf:'mpf', v_h_em:'h_em', v_h_gold:'h_gold', v_s_mc:'s_mc', v_v_c_mc:'c_mc', v_other:'other'};
+        const fields = {v_hsbc:'hsbc', v_mox_total:mox, v_mox_dep:'mox_dep', v_mox_time:'mox_time', v_futu:'futu', v_mfc:mfc, val_cash:'cash', v_recv:'recv', v_mpf:'mpf', v_h_em:'h_em', v_h_gold:'h_gold', v_s_mc:'s_mc', v_v_c_mc:'c_mc', v_other:'other'};
         for (let [vid, val] of Object.entries(fields)) {
             const el = document.getElementById(vid);
             if (el) el.innerHTML = typeof val === 'string' ? fmt(getV(val)) : fmt(val);
@@ -253,7 +263,6 @@
         const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
         const mox = getV('mox_dep') + getV('mox_time');
         const mfc = getV('mfc_usd') * usdRate;
-        
         const snap = {
             date: new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
             cash: getV('hsbc') + mox + getV('cash') + getV('recv'),
@@ -264,30 +273,30 @@
         historyData.unshift(snap);
         localStorage.setItem('assetHistory', JSON.stringify(historyData));
         renderHistory();
-        alert("Snapshot saved! Check the History tab.");
+        alert("Snapshot saved!");
     }
 
     function renderHistory() {
         const container = document.getElementById('snapshot-list');
         container.innerHTML = historyData.map((s, index) => `
             <div class="card">
-                <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--pink)">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--pink); margin-bottom: 5px;">
                     <span>${s.date}</span>
-                    <span>Total: $${Math.round(s.cash + s.stocks + s.mpf - s.liab).toLocaleString()}</span>
+                    <span>$${Math.round(s.cash + s.stocks + s.mpf - s.liab).toLocaleString()}</span>
                 </div>
                 <table>
-                    <tr><td>💰 Cash+Recv</td><td>$${Math.round(s.cash).toLocaleString()}</td></tr>
-                    <tr><td>📈 Stocks</td><td>$${Math.round(s.stocks).toLocaleString()}</td></tr>
-                    <tr><td>🏦 MPF</td><td>$${Math.round(s.mpf).toLocaleString()}</td></tr>
-                    <tr><td>💳 Liabilities</td><td style="color:var(--pink)">-$${Math.round(s.liab).toLocaleString()}</td></tr>
+                    <tr><td>Cash Group</td><td align="right">$${Math.round(s.cash).toLocaleString()}</td></tr>
+                    <tr><td>Stocks</td><td align="right">$${Math.round(s.stocks).toLocaleString()}</td></tr>
+                    <tr><td>MPF</td><td align="right">$${Math.round(s.mpf).toLocaleString()}</td></tr>
+                    <tr><td>Liabilities</td><td align="right" style="color:var(--pink)">-$${Math.round(s.liab).toLocaleString()}</td></tr>
                 </table>
-                <button onclick="deleteSnap(${index})" style="background:none; border:none; color:grey; font-size:0.7rem; margin-top:10px; cursor:pointer;">Delete</button>
+                <button onclick="deleteSnap(${index})" style="background:none; border:none; color:var(--muted-text); font-size:0.7rem; margin-top:10px; cursor:pointer;">Remove</button>
             </div>
         `).join('');
     }
 
     function deleteSnap(i) {
-        if(confirm("Delete this record?")) {
+        if(confirm("Remove this snapshot?")) {
             historyData.splice(i, 1);
             localStorage.setItem('assetHistory', JSON.stringify(historyData));
             renderHistory();
@@ -295,7 +304,7 @@
     }
 
     window.onload = () => {
-        const saved = localStorage.getItem('assetData_v5');
+        const saved = localStorage.getItem('assetData_v6');
         if (saved) {
             const data = JSON.parse(saved);
             Object.keys(data).forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = data[id]; });
